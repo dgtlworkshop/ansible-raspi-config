@@ -33,3 +33,37 @@ Not fully tested:
 
 TODO:
 - Change user password (i prefer Ansible user module)
+
+## Usage
+
+### Vars
+
+```yml
+REBOOT: True #Should i reboot at the end of this playbook?
+UPDATE: True
+HOSTNAME: "picasa"
+MEMSPLIT: "128" #mb
+BOOTBEHAVIOUR: "B1" #B1 cli, B2 cli autologin, B3 desktop, B4 desktop autologin
+LOCALE: "it_IT.UTF-8"
+TIMEZONE: "Europe/Rome"
+XKBLAYOUT: "it" #default "gb"
+NETNAMES: False
+SSH: True
+SERIAL: True
+CAMERA: True
+VNC: False
+SPI: False
+I2C: True
+ONEWIRE: False
+RGPIO: False
+WIFI_COUNTRY: "IT"
+BOOTWAIT: False
+BOOTSPLASH: False
+OVERSCAN: False
+OVERCLOCK: False
+HDMI_GROUP: False
+HDMI_MOD: False
+PIXDUB: False
+AUDIO_OUT: "0" #0 Auto, 1 Force 3.5mm, 2 Force hdmi
+GLDRIVER: False #G1 Full KMS, G2 Fake KMS, G3 Legacy
+```
