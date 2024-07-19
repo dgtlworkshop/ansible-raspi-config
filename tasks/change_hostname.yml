@@ -1,0 +1,13 @@
+---
+- name: Get hostname
+  shell: "raspi-config nonint get_hostname"
+  register: pi_hostname
+  changed_when: False
+
+- name: Print current hostname
+  debug:
+    msg: "Current hostname: {{ pi_hostname.stdout }}"
+
+- name: Change hostname to {{ HOSTNAME }}
+  shell: "raspi-config nonint do_hostname {{ HOSTNAME }}"
+  when: pi_hostname.stdout != HOSTNAME

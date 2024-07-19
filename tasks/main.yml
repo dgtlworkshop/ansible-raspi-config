@@ -1,14 +1,18 @@
 #Update
 - name: Update raspi-config itself
   become: true
-  apt: name=raspi-config update_cache=yes state=present cache_valid_time=3600
-  when: UPDATE == True
+  ansible.builtin.apt:
+    name: raspi-config
+    update_cache: yes
+    state: present
+    cache_valid_time: 3600
+  when: UPDATE is defined and UPDATE
 
 #Get some basic info
 - name: Get Raspberry Pi type
-  shell: "raspi-config nonint get_pi_type"
+  shell: raspi-config nonint get_pi_type
   register: pi_type
-  changed_when: False
+  changed_when: false
 
 - name: Show pi version
   debug:
@@ -23,40 +27,18 @@
 #2 Network Options
 
 #N1 Hostname
-- name: Get hostname
-  shell: "raspi-config nonint get_hostname"
-  register: pi_hostname
-  changed_when: False
-
-- name: Print current hostname
-  debug:
-    msg: "Current hostname: {{ pi_hostname.stdout }}"
-
-- name: Change hostname
-  shell: "raspi-config nonint do_hostname {{ HOSTNAME }}"
-  when: pi_hostname.stdout != HOSTNAME
+- name: Change Hostname
+  ansible.builtin.import_tasks: change_hostname.yml
+  when: HOSTNAME is defined
 
 #N2 Wi-fi
 #- name: Set WiFi credentials
 #shell: "raspi-config nonint do_wifi_ssid_passphrase {{ SSID }} {{ PASSPHRASE }}"
 
 #N3 Network interface names
-- name: Get network names status
-  shell: "raspi-config nonint get_net_names"
-  register: pi_netnames
-  changed_when: False
-
-- name: Print current network names status
-  debug:
-    msg: "Current network names status: {{ pi_netnames.stdout }}"
-
-- name: Enable network names
-  shell: "raspi-config nonint do_net_names 0"
-  when: (NETNAMES == True) and (pi_netnames.stdout != '0')
-
-- name: Disable network names
-  shell: "raspi-config nonint do_net_names 1"
-  when: (NETNAMES == False) and (pi_netnames.stdout != '1')
+- name: Set predictable hostnames
+  ansible.builtin.import_tasks: network_names.yml
+  when: NETNAMES is defined
 
 #3 Boot Options
 
@@ -64,7 +46,7 @@
 - name: Get boot CLI
   shell: "raspi-config nonint get_boot_cli"
   register: boot_cli
-  changed_when: False
+  changed_when: false
 
 - name: Print boot CLI
   debug:
@@ -84,17 +66,9 @@
   shell: "raspi-config nonint do_boot_behaviour {{ BOOTBEHAVIOUR }}"
 
 #B2 Wait for Network at Boot
-- name: Get boot wait for network status
-  shell: "raspi-config nonint get_boot_wait"
-  register: boot_wait
-  changed_when: False
-
-- name: Print boot wait for network status
-  debug:
-    msg: "Boot wait is: {{ boot_wait.stdout }}"
-
-  #- name: Set boot wait network status
-  #shell: "raspi-config nonint do_boot_wait {{ BOOTWAIT }}"
+- name: Set wait for network status
+  ansible.builtin.import_tasks: wait_for_network_status.yml
+  when: BOOTWAIT is defined
 
 #B3 Splash Screen
 - name: Get splash status

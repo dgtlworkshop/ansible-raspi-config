@@ -1,0 +1,9 @@
+---
+- name: Get predictable network names status
+  shell: raspi-config nonint get_net_names
+  register: pi_netnames
+  changed_when: false
+
+- name: Set predictable network names to {{ "enabled" if NETNAMES else "disabled" }}
+  shell: raspi-config nonint do_net_names 0
+  when: pi_netnames.stdout != '0' if NETNAMES else '1'

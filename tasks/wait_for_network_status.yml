@@ -1,0 +1,8 @@
+- name: Get boot wait for network status
+  ansible.builtin.shell: raspi-config nonint get_boot_wait
+  register: boot_wait
+  changed_when: false
+
+- name: Set boot wait network status to {{ "wait" if BOOTWAIT else "not wait" }}
+  ansible.builtin.shell: raspi-config nonint do_boot_wait {{ "1" if BOOTWAIT else "0" }}
+  when: "{{ boot_wait.stdout }} == '0' if BOOTWAIT else '1'"
